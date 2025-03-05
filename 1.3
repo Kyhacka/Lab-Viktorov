@@ -1,0 +1,65 @@
+open System
+
+module ListOperations =
+    let add list element = list @ [element]
+    let remove list element = list |> List.filter ((<>) element)
+    let poisk list element = List.tryFind ((=) element) list
+    let connect list1 list2 = List.append list1 list2
+    let index list index = 
+        if index < 0 || index >= List.length list then failwith "Индекс за пределами списка" 
+        else list.[index]
+
+[<EntryPoint>]
+let main argv =
+    printfn "Операции со списком:\n1 - Добавить элемент\n2 - Удалить элемент\n3 - Найти элемент\n4 - Сцепить список с другим\n5 - Получить элемент по индексу\n6 - Показать текущий список\n0 - Выйти"
+
+    let rec operations currentList =
+        printf "\nВведите номер операции: "
+        match Console.ReadLine() with
+        | "1" ->
+            printf "Введите элемент для добавления: "
+            match Int32.TryParse(Console.ReadLine()) with
+            | true, value -> operations (ListOperations.add currentList value)
+            | _ -> printfn "Некорректный ввод." ; operations currentList
+
+        | "2" ->
+            printf "Введите элемент для удаления: "
+            match Int32.TryParse(Console.ReadLine()) with
+            | true, value -> operations (ListOperations.remove currentList value)
+            | _ -> printfn "Некорректный ввод." ; operations currentList
+
+        | "3" ->
+            printf "Введите элемент для поиска: "
+            match Int32.TryParse(Console.ReadLine()) with
+            | true, value -> 
+                if ListOperations.poisk currentList value |> Option.isSome then 
+                    printfn "Элемент найден."
+                else 
+                    printfn "Элемент не найден."
+                operations currentList
+            | _ -> printfn "Некорректный ввод." ; operations currentList
+
+        | "4" ->
+            printf "Введите второй список (разделите элементы пробелами): "
+            let secondList = Console.ReadLine().Split(' ') |> Array.choose (fun s -> match Int32.TryParse(s) with | true, value -> Some value | _ -> None) |> Array.toList
+            operations (ListOperations.connect currentList secondList)
+
+        | "5" ->
+            printf "Введите индекс элемента: "
+            match Int32.TryParse(Console.ReadLine()) with
+            | true, index -> 
+                try 
+                    printfn "Элемент по индексу %d: %d" index (ListOperations.index currentList index)
+                with _ -> printfn "Ошибка: Индекс за пределами списка."
+                operations currentList
+            | _ -> printfn "Некорректный ввод." ; operations currentList
+
+        | "6" ->
+            printfn "Текущий список: %A" currentList
+            operations currentList
+            
+        | "0" -> printfn "Выход из программы."
+        | _ -> printfn "Некорректная операция." ; operations currentList
+
+    operations []
+    0 // Возврат кода завершения
