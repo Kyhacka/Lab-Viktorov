@@ -1,0 +1,25 @@
+open System
+
+let maxDigit (n: int) : int =
+    let rec findMax num maxSoFar =
+        if num = 0 then maxSoFar
+        else 
+            let currentDigit = num % 10
+            let newMax = if currentDigit > maxSoFar then currentDigit else maxSoFar
+            findMax (num / 10) newMax
+
+    findMax n 0
+
+[<EntryPoint>]
+let main argv =
+    printf "Введите натуральное число: "
+    let input = Console.ReadLine()
+
+    match Int32.TryParse(input) with
+    | (true, number) when number > 0 ->
+        let maxDigitValue = maxDigit number
+        printfn "Максимальная цифра в числе %d: %d" number maxDigitValue
+    | _ ->
+        printfn "Пожалуйста, введите корректное натуральное число."
+
+    0 // Код завершения
