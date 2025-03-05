@@ -1,0 +1,15 @@
+open System
+
+[<EntryPoint>]
+let main argv =
+    let rec readWords acc =
+        printf "Введите слово (или нажмите Enter для завершения): "
+        let input = Console.ReadLine()
+        if input = "" then 
+            List.rev acc // Возвращаем список в обратном порядке
+        else 
+            readWords (input :: acc) // Добавляем слово в список и продолжаем
+
+    let words = readWords [] // Начинаем с пустого списка
+    printfn "Вы ввели следующие слова: %A" words // Выводим результат
+    0 // Код завершения
